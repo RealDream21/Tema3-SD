@@ -1,111 +1,98 @@
 #include <iostream>
 #include <fstream>
+#include <climits>
 
 using namespace std;
 
-class Deque{
-    int i, j;
+const int NMAX = 5000000;
+
+class Deque {
+    long long *v;
+    long long i, j;
+
 public:
-    int * v;
     Deque();
+    void push_back(long long a);
     void pop_back();
-    void push_back(int toPush);
-    int back();
+    long long back();
+    void push_front(long long a);
     void pop_front();
-    void push_front(int toPush);
-    int front();
+    long long front();
     bool empty();
 };
 
-int main()
-{
+int main() {
     ifstream fin("deque.in");
     ofstream fout("deque.out");
 
     Deque myDeque;
-    int n, k, x;
-    int sum = 0;
+    long long n, k, x;
+    long long sum = 0;
+
     fin >> n >> k;
 
-    for(int i = 0; i < k; i++)
-    {
+    for (int i = 0; i < n; i++) {
         fin >> x;
-        while(!myDeque.empty() && myDeque.back() > x)
-            myDeque.pop_back();
 
-        myDeque.push_back(x);
-    }
-
-    sum += myDeque.front();
-
-    for(int i = k; i < n; i++){
-        fin >> x;
-        if(myDeque.front() == i - k)
+        if (!myDeque.empty() && myDeque.front() <= i - k)
             myDeque.pop_front();
 
-        while(!myDeque.empty() && myDeque.back() > x)
+        while (!myDeque.empty() && x < myDeque.back())
             myDeque.pop_back();
 
         myDeque.push_back(x);
 
-        sum += myDeque.front();
+        if (i >= k - 1) {
+            sum += myDeque.front();
+            if (myDeque.front() == i - k + 1)
+                myDeque.pop_front();
+        }
     }
 
-    fout << sum << endl;
-
+    cout << sum << "\n";
     return 0;
 }
 
-Deque::Deque()
-{
-    v = new int[5000000];
-    i = -1;
-    j = 5000001;
+Deque::Deque() {
+    j = 0;
+    i = 0;
+    v = new long long[NMAX];
 }
 
-void Deque::pop_back()
-{
-    if(j == 5000001)
-        return;
+void Deque::push_back(long long a) {
+    v[j] = a;
     j++;
 }
 
-void Deque::push_back(int toPush)
-{
-    j--;
-    v[j] = toPush;
+void Deque::pop_back() {
+    if (!empty())
+        j--;
 }
 
-int Deque::back()
-{
-    if(j <= 5000000)
-        return v[j];
-    else
-        return INT_MIN;
-}
-
-void Deque::pop_front()
-{
-    if(i == -1)
-        return;
-    i--;
-}
-
-void Deque::push_front(int toPush)
-{
-    v[++i] = toPush;
-}
-
-int Deque::front()
-{
-    if(i >= 0)
-        return v[i];
+long long Deque::back() {
+    if (!empty())
+        return v[j - 1];
     return INT_MIN;
 }
 
-bool Deque::empty()
-{
-    if(i == -1 && j == 5000001)
+void Deque::push_front(long long a) {
+    i = (i - 1 + NMAX) % NMAX;
+    v[i] = a;
+}
+
+void Deque::pop_front() {
+    if (!empty())
+        i++;
+}
+
+long long Deque::front() {
+    if (!empty())
+        return v[i];
+    return INT_MAX;
+}
+
+bool Deque::empty() {
+    if (i >= j)
         return true;
     return false;
 }

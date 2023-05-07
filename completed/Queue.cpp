@@ -48,19 +48,6 @@ int main()
 void push_back(int a)
 {
     fout << "read(" << a << ") ";
-    /*
-    if(stiva1.empty() && stiva2.empty())
-    {
-        fout << "push(2," << a << ") ";
-        stiva2.push_back(a);
-        return;
-    }*/
-    while(!stiva2.empty())
-    {
-        int toPush = stiva2.top();
-        stiva2.pop();
-        stiva1.push(toPush);
-    }
     stiva1.push(a);
     fout << "push(1," << a << ") ";
 }

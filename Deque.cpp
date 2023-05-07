@@ -4,20 +4,19 @@
 
 using namespace std;
 
-const int NMAX = 5000000;
+const int  NMAX = 5000000;
 
 class Deque {
-    long long *v;
-    long long i, j;
-
+    int  i, j;
 public:
+    int  *v;
     Deque();
-    void push_back(long long a);
+    void push_back(int  a);
     void pop_back();
-    long long back();
-    void push_front(long long a);
+    int  back();
+    void push_front(int  a);
     void pop_front();
-    long long front();
+    int  front();
     bool empty();
 };
 
@@ -26,73 +25,73 @@ int main() {
     ofstream fout("deque.out");
 
     Deque myDeque;
-    long long n, k, x;
-    long long sum = 0;
+    int  n, k, x;
+    long long  *v = new long long [NMAX];
+    long long  sum = 0;
 
     fin >> n >> k;
+    for (int  i = 0; i < n; i++)
+        fin >> v[i];
 
-    for (int i = 0; i < n; i++) {
-        fin >> x;
-
+    for (int  i = 0; i < n; i++) {
         if (!myDeque.empty() && myDeque.front() <= i - k)
             myDeque.pop_front();
 
-        while (!myDeque.empty() && x < myDeque.back())
+        while (!myDeque.empty() && v[i] < v[myDeque.back()])
             myDeque.pop_back();
 
-        myDeque.push_back(x);
+        myDeque.push_back(i);
 
         if (i >= k - 1) {
-            sum += myDeque.front();
+            sum += v[myDeque.front()];
             if (myDeque.front() == i - k + 1)
                 myDeque.pop_front();
         }
     }
-
-    cout << sum << "\n";
+    fout << sum << "\n";
     return 0;
 }
 
 Deque::Deque() {
     j = 0;
     i = 0;
-    v = new long long[NMAX];
+    v = new int [NMAX];
 }
 
-void Deque::push_back(long long a) {
+void Deque::push_back(int  a) {
     v[j] = a;
-    j++;
+    j = (j + 1) % NMAX;
 }
 
 void Deque::pop_back() {
     if (!empty())
-        j--;
+        j = (j - 1 + NMAX) % NMAX;
 }
 
-long long Deque::back() {
+int Deque::back() {
     if (!empty())
-        return v[j - 1];
+        return v[(j - 1 + NMAX) % NMAX];
     return INT_MIN;
 }
 
-void Deque::push_front(long long a) {
+void Deque::push_front(int  a) {
     i = (i - 1 + NMAX) % NMAX;
     v[i] = a;
 }
 
 void Deque::pop_front() {
-    if (!empty())
-        i++;
+    if(!empty())
+        i = (i + 1) % NMAX;
 }
 
-long long Deque::front() {
+int Deque::front() {
     if (!empty())
         return v[i];
     return INT_MAX;
 }
 
 bool Deque::empty() {
-    if (i >= j)
+    if (i == j)
         return true;
     return false;
 }
